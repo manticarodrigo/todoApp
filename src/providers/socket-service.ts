@@ -57,6 +57,20 @@ export class SocketService {
     self.collections[name] = _s;
   }
 
+  pubData(collection, endpoint, data, callback) {
+      let self = this;
+
+      if (self.isConnectionAlive) {
+          self.collections[collection].emit(endpoint, data);
+      } else {
+          this.saveToLocalStorage(collection, {
+              "endpoint": endpoint,
+              "data": data
+          });
+      }
+      callback(!this.isConnectionAlive);
+  }
+
   saveToLocalStorage(collection, data) {
       var savedData = this.getFromLocalStorage(collection);
       var ls = savedData || [];

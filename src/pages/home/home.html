@@ -9,6 +9,11 @@
   <p>
     Type in a todo to submit to database.
   </p>
-  <ion-input placeholder="Todo name" [(ngModel)]="todo"></ion-input>
-  <button (click)="saveTodo()"></button>
+  <ion-input placeholder="Todo name" [(ngModel)]="todo.name"></ion-input>
+  <button ion-button (click)="saveTodo()">SAVE</button>
+  <ion-list *ngIf="todos">
+    <ion-item *ngFor="let todo of todos | async" (click)="editTodo(todo)">
+      {{ todo.name }}
+    </ion-item>
+  </ion-list>
 </ion-content>

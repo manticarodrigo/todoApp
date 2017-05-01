@@ -36,6 +36,7 @@ module.exports = function(io) {
 
 
     function dispatchAll(socket) {
+        console.log("Dispatching todos...");
         todosDB.getAllTodos(function(err, data) {
             if (err) throw err; // You can emit the error to a socket 
             io.of('/todos').emit('allTodos', data);

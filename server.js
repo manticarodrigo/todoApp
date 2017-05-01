@@ -8,17 +8,10 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('./sockets')(server);
 
-// view engine setup
-app.set('views', path.join(__dirname, 'www'));
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
-
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(cookieParser());
-
-// app.use(express.static(path.join(__dirname, 'src')));
 
 app.use('/', require('./routes'));
 
