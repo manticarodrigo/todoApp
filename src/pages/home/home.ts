@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 
-import { TodoService } from '../../providers/todo-service';
+import { SocketService } from '../../providers/socket-service';
 
 @Component({
   selector: 'page-home',
@@ -14,23 +14,39 @@ export class HomePage {
   };
   todos: any;
   constructor(public navCtrl: NavController,
-              private todoService: TodoService) {
-  }
-
-  ionViewWillLoad() {
-    this.todos = this.todoService.todos; // subscribe to entire collection
+              private socketService: SocketService) {
+    this.socketService.addCollection('todos');
+    this.socketService.addSubscription('todos', 'allTodos')
+    .subscribe(data => {
+      console.log("Component received todos : ");
+      console.log(data);
+      if (data) {
+        this.todos = data;
+      } else {
+        this.todos = null;
+      }
+    });
   }
 
   saveTodo() {
-    console.log("Saving todo: " + this.todo.name);
+    let self = this;
+    console.log('in saveTodo and socket is: ', this.socketService.socket);
     if (!this.todo.id) {
       this.todo.id = Math.ceil(Math.random() * 1000);
     }
-    this.todoService.saveTodo(this.todo);
-    this.todo = {
-      id: null,
-      name: ''
-    };
+    this.socketService.pubData('todos', 'saveTodo', this.todo, function(savedToLocal) {
+        console.log('savedToLocal : ', savedToLocal);
+        self.todo = {
+          id: null,
+          name: ''
+        };
+    });
+  }
+
+  removeTodo(todo) {
+    this.socketService.pubData('todos', 'deleteTodo', todo, function(savedToLocal) {
+        console.log('savedToLocal : ', savedToLocal);
+    });
   }
 
   editTodo(todo) {

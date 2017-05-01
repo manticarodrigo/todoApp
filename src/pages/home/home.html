@@ -12,8 +12,11 @@
   <ion-input placeholder="Todo name" [(ngModel)]="todo.name"></ion-input>
   <button ion-button (click)="saveTodo()">SAVE</button>
   <ion-list *ngIf="todos">
-    <ion-item *ngFor="let todo of todos | async" (click)="editTodo(todo)">
+    <ion-item *ngFor="let todo of todos" (click)="editTodo(todo)">
       {{ todo.name }}
+      <span class="done">
+        <button ion-button (click)="removeTodo(todo)">DONE</button>
+      </span>
     </ion-item>
   </ion-list>
 </ion-content>

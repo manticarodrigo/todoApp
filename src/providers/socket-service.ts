@@ -1,18 +1,21 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 import * as io from 'socket.io-client';
 
 @Injectable()
 export class SocketService {
+  observables: any;
   collections: any;
   port = 'http://localhost:2000';
   socket: any;
   isConnectionAlive = false;
 
   constructor() {
+    this.collections = {};
   }
 
-
-  initialize() {
+  init() {
     console.log("Initializing sockets...");
     
     this.socket = io.connect(this.port);
@@ -43,30 +46,33 @@ export class SocketService {
     });
   }
 
-  appendCollection(coll) {
+  addCollection(name) {
     // Create a "Sub-Socket" for each collection
+    var _s = io.connect(this.port + '/' + name);
+    this.collections[name] = _s;
+  }
+
+  addSubscription(coll, name) {
     let self = this;
-    var name = coll.name;
-    var _s = io.connect(self.port + '/' + name);
-    console.log(Object.keys(coll.subscribers));
-    Object.keys(coll.subscribers).forEach(mthd => {
-      console.log(coll.subscribers[mthd]);
-        _s.on(mthd, coll.subscribers[mthd]);
+    let observable = new Observable(observer => {
+      self.collections[coll].on(name, (data) => {
+        observer.next(data);
+      });
     });
-    self.collections = {};
-    self.collections[name] = _s;
+    return observable;
   }
 
   pubData(collection, endpoint, data, callback) {
       let self = this;
-
       if (self.isConnectionAlive) {
-          self.collections[collection].emit(endpoint, data);
+        console.log("Emitting data at endpoint : " + collection + "/" + endpoint);
+        self.collections[collection].emit(endpoint, data);
       } else {
-          this.saveToLocalStorage(collection, {
-              "endpoint": endpoint,
-              "data": data
-          });
+        console.log("Saving data at endpoint to local storage : " + collection + "/" + endpoint);
+        this.saveToLocalStorage(collection, {
+            "endpoint": endpoint,
+            "data": data
+        });
       }
       callback(!this.isConnectionAlive);
   }

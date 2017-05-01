@@ -1,6 +1,6 @@
 {
-  "name": "Ionic",
-  "short_name": "Ionic",
+  "name": "todoApp",
+  "short_name": "todoApp",
   "start_url": "index.html",
   "display": "standalone",
   "icons": [{

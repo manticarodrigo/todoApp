@@ -1,5 +1,5 @@
 var mongojs = require('mongojs');
-var db = mongojs('mongodb://127.0.0.1:27017/edumate', ['todos']);
+var db = mongojs('mongodb://127.0.0.1:27017/todos', ['todos']);
 
 var todos = {
 
